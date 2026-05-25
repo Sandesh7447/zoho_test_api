@@ -20,43 +20,78 @@
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=5000)
 
-from flask import Flask
-from flask_restx import Api, Resource, fields
+from flask import Flask, request, jsonify
+from flasgger import Swagger
 
 app = Flask(__name__)
 
-api = Api(
-    app,
-    version='1.0',
-    title='Lead API',
-    description='Salesforce Lead Integration API',
-    doc='/swagger/'
-)
+app.config['SWAGGER'] = {
+    'title': 'Lead API',
+    'uiversion': 3
+}
 
-lead_model = api.model('Lead', {
-    'name': fields.String(required=True, description='Lead Name'),
-    'email': fields.String(required=True, description='Lead Email'),
-    'phone': fields.String(required=False, description='Phone Number')
-})
+swagger = Swagger(app)
 
+@app.route('/')
+def home():
+    return "API Running"
 
-@api.route('/createLeadTest')
-class CreateLead(Resource):
+@app.route('/createLeadTest', methods=['POST'])
+def create_lead():
+    """
+    Create Lead API
+    ---
+    tags:
+      - Lead API
 
-    @api.expect(lead_model)
-    def post(self):
+    consumes:
+      - application/json
 
-        data = api.payload
+    produces:
+      - application/json
 
-        print("========= LEAD DATA RECEIVED =========")
-        print(data)
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: Sandesh
 
-        return {
-            "success": True,
-            "message": "Lead received successfully",
-            "data": data
-        }, 200
+            last_name:
+              type: string
+              example: Murkute
 
+            email:
+              type: string
+              example: sandesh@gmail.com
+
+            phone:
+              type: string
+              example: 9876543210
+
+            company:
+              type: string
+              example: Orbit
+
+    responses:
+      200:
+        description: Lead created successfully
+    """
+
+    data = request.json
+
+    print("Received Data:")
+    print(data)
+
+    return jsonify({
+        "success": True,
+        "message": "Lead received",
+        "data": data
+    })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
