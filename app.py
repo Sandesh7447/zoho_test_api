@@ -25,16 +25,32 @@ from flasgger import Swagger
 
 app = Flask(__name__)
 
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Lead API",
+        "description": "Salesforce Lead Integration API",
+        "version": "1.0"
+    },
+    "host": "zoho-test-api-2.onrender.com",
+    "basePath": "/",
+    "schemes": [
+        "https"
+    ]
+}
+
 app.config['SWAGGER'] = {
     'title': 'Lead API',
     'uiversion': 3
 }
 
-swagger = Swagger(app)
+swagger = Swagger(app, template=swagger_template)
+
 
 @app.route('/')
 def home():
     return "API Running"
+
 
 @app.route('/createLeadTest', methods=['POST'])
 def create_lead():
@@ -57,25 +73,26 @@ def create_lead():
         schema:
           type: object
           properties:
+
             first_name:
               type: string
-              example: Sandesh
+              example: "Sandesh"
 
             last_name:
               type: string
-              example: Murkute
+              example: "Murkute"
 
             email:
               type: string
-              example: sandesh@gmail.com
+              example: "sandesh@gmail.com"
 
             phone:
               type: string
-              example: 9876543210
+              example: "9876543210"
 
             company:
               type: string
-              example: Orbit
+              example: "Orbit"
 
     responses:
       200:
@@ -92,6 +109,7 @@ def create_lead():
         "message": "Lead received",
         "data": data
     })
+
 
 if __name__ == '__main__':
     app.run(debug=True)
